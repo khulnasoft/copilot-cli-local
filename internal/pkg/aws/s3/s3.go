@@ -10,6 +10,7 @@ import (
 	"io"
 	"mime"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -150,6 +151,11 @@ func (s *S3) EmptyBucket(bucket string) error {
 func ParseURL(url string) (bucket string, key string, err error) {
 	if strings.HasPrefix(url, s3URIPrefix) {
 		return parseS3URI(url)
+	}
+	trimmed := strings.TrimPrefix(strings.TrimPrefix(url, "http://"), "https://")
+	parsedURL := strings.SplitN(trimmed, "/", 2)
+	if len(parsedURL) != 2 {
+		return "", "", fmt.Errorf("cannot parse S3 URL %s into bucket name and key", url)
 	}
 	return parseHTTPURI(url)
 }
