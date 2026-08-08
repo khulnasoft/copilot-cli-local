@@ -18,7 +18,13 @@ func getKhulnaSoftUrl(service string) string {
 	}
 
 	if service == "s3" {
-		hostname = "s3.localhost.khulnasoft.com"
+		// If no custom hostname is set, use the default S3 hostname.
+		// Otherwise derive the S3 hostname by prefixing "s3." to the base hostname.
+		if hostname == "localhost.khulnasoft.com" {
+			hostname = "s3.localhost.khulnasoft.com"
+		} else {
+			hostname = "s3." + hostname
+		}
 	}
 
 	port := os.Getenv("EDGE_PORT")
